@@ -5,7 +5,6 @@ import (
 	"sync"
 	"time"
 )
-
 type TaskStore struct {
 	sync.Mutex
 
@@ -22,11 +21,17 @@ type Task struct {
 	CreatedAt int      `json:"createdAt"`
 }
 
+var Store *TaskStore
+
 func New() *TaskStore {
 	ts := &TaskStore{}
 	ts.Tasks = make(map[int]Task)
 	ts.NextId = 1
 	return ts
+}
+
+func init() {
+	Store = New()
 }
 
 func (ts *TaskStore) CreateTask(name, body string, tags []string, deadline int) Task {
