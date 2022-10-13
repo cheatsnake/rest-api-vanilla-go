@@ -5,12 +5,12 @@ import (
 	"net/http"
 )
 
-type errorMessage struct {
+type ErrorMessage struct {
 	Message string `json:"message"`
 }
 
-func HandleError (w http.ResponseWriter, code int, msg string) {
-	e := errorMessage{msg}
+func HandleError(w http.ResponseWriter, code int, msg string) {
+	e := ErrorMessage{msg}
 	jsonErr, _ := json.Marshal(e)
 
 	w.WriteHeader(code)
