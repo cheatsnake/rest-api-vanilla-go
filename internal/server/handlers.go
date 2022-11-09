@@ -1,18 +1,11 @@
-package handlers
+package server
 
 import (
 	"encoding/json"
 	"net/http"
 	"strconv"
 	"strings"
-
-	"github.com/cheatsnake/rest-api-vanilla-go/internal/taskstore"
-	helpers "github.com/cheatsnake/rest-api-vanilla-go/tools"
 )
-
-type Server struct {
-	Store *taskstore.TaskStore
-}
 
 type taskBody struct {
 	Name     string   `json:"name"`
@@ -27,13 +20,13 @@ func (s *Server) TaskHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		taskId, err := strconv.Atoi(strings.Split(r.URL.Path, "/")[2])
 		if err != nil {
-			helpers.HandleError(w, http.StatusBadRequest, "error parsing task id")
+			HandleError(w, http.StatusBadRequest, "error parsing task id")
 			return
 		}
 
 		task, err := s.Store.GetTaskById(taskId)
 		if err != nil {
-			helpers.HandleError(w, http.StatusNotFound, "task not found")
+			HandleError(w, http.StatusNotFound, "task not found")
 			return
 		}
 
@@ -46,7 +39,7 @@ func (s *Server) TaskHandler(w http.ResponseWriter, r *http.Request) {
 
 		err := json.NewDecoder(r.Body).Decode(&task)
 		if err != nil {
-			helpers.HandleError(w, http.StatusBadRequest, err.Error())
+			HandleError(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
@@ -61,19 +54,19 @@ func (s *Server) TaskHandler(w http.ResponseWriter, r *http.Request) {
 
 		taskId, err := strconv.Atoi(strings.Split(r.URL.Path, "/")[2])
 		if err != nil {
-			helpers.HandleError(w, http.StatusBadRequest, "error parsing task id")
+			HandleError(w, http.StatusBadRequest, "error parsing task id")
 			return
 		}
 
 		err = json.NewDecoder(r.Body).Decode(&task)
 		if err != nil {
-			helpers.HandleError(w, http.StatusBadRequest, "failed parsing body")
+			HandleError(w, http.StatusBadRequest, "failed parsing body")
 			return
 		}
 
 		updatedTask, err := s.Store.UpdateTaskById(taskId, task.Name, task.Body, task.Tags, task.Deadline)
 		if err != nil {
-			helpers.HandleError(w, http.StatusNotFound, err.Error())
+			HandleError(w, http.StatusNotFound, err.Error())
 			return
 		}
 
@@ -84,13 +77,13 @@ func (s *Server) TaskHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodDelete {
 		taskId, err := strconv.Atoi(strings.Split(r.URL.Path, "/")[2])
 		if err != nil {
-			helpers.HandleError(w, http.StatusBadRequest, "error parsing task id")
+			HandleError(w, http.StatusBadRequest, "error parsing task id")
 			return
 		}
 
 		err = s.Store.DeleteTaskById(taskId)
 		if err != nil {
-			helpers.HandleError(w, http.StatusNotFound, err.Error())
+			HandleError(w, http.StatusNotFound, err.Error())
 			return
 		}
 
